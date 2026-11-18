@@ -142,12 +142,15 @@ local function buildPlot(index: number, x: number)
 	end
 	local board = part({ Name = "OwnerBoard", Size = Vector3.new(36, 7, 1), Position = Vector3.new(x, 11, z - 30), Color = Color3.fromRGB(30, 25, 50) })
 	local ownerLabel = surfaceText(board, Enum.NormalId.Back, "EMPTY BASE", color)
+	-- back row stands on a raised tier so its labels float clear of the front row's
+	part({ Name = "BackTier", Size = Vector3.new(72, 10, 16), Position = Vector3.new(x, 6, z - 15), Color = color:Lerp(Color3.new(1, 1, 1), 0.2) })
 	local pedestals = {}
-	for row, dz in { -14, 8 } do
+	for row, dz in { -15, 8 } do
+		local lift = row == 1 and 10 or 0
 		for col, dx in { -28, -9.5, 9.5, 28 } do
-			local cf = CFrame.new(x + dx, 1, z + dz)
+			local cf = CFrame.new(x + dx, 1 + lift, z + dz)
 			buildPedestal(index, cf, color)
-			pedestals[(row - 1) * 4 + col] = CFrame.new(x + dx, 4, z + dz) * CFrame.Angles(0, math.pi, 0)
+			pedestals[(row - 1) * 4 + col] = CFrame.new(x + dx, 4 + lift, z + dz) * CFrame.Angles(0, math.pi, 0)
 		end
 	end
 	local shield = part({ Name = "ShieldDome", Shape = Enum.PartType.Ball, Size = Vector3.new(86, 86, 86), Position = Vector3.new(x, 0, z), Color = Color3.fromRGB(90, 200, 255), Material = Enum.Material.ForceField, Transparency = 1, CanCollide = false, CanQuery = false })

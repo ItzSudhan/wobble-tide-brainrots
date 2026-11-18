@@ -341,7 +341,7 @@ function Builder.attachLabel(model: Model, id: string, mutation: string, priceTe
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "Label"
 	-- sized in studs so neighbouring labels never overlap, however far the camera is
-	gui.Size = UDim2.fromScale(15, priceText and 7.4 or 5.8)
+	gui.Size = UDim2.fromScale(17, priceText and 8.4 or 6.6)
 	gui.StudsOffsetWorldSpace = Vector3.new(0, model:GetExtentsSize().Y + 3.2, 0)
 	gui.MaxDistance = 170
 	gui.LightInfluence = 0
