@@ -1,3 +1,6 @@
+// Wobble Tide Brainrots: buy absurd brainrots off the beach runway, carry them home before the tidal wave hits,
+// and keep your base locked against the Crumb Bandit gull. This program hands the game in.
+//
 // A working roblox-brainrot-01 entry (Node 22, standard library only): the game is this directory's Rojo
 // project, built into game.rbxl with `rojo build default.project.json --output game.rbxl`, and the program
 // hands it in. It copies game.rbxl, src/, screenshots/ and PLAY.json from beside this file to /output and

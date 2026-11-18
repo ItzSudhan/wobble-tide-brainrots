@@ -1,0 +1,103 @@
+--!strict
+-- GameServer: boots Wobble Tide Brainrots. Builds the island, creates the remotes, starts every
+-- service and wires players in and out. The server owns money, inventory, spawning and both threats.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local World = require(script.Parent.WorldBuilder)
+local PlayerState = require(script.Parent.PlayerState)
+local Market = require(script.Parent.BrainrotMarket)
+local Base = require(script.Parent.BaseService)
+local Wave = require(script.Parent.WaveHazard)
+local Raid = require(script.Parent.GullRaid)
+
+local function createRemotes()
+	local folder = Instance.new("Folder")
+	folder.Name = "Remotes"
+	local remotes = {}
+	for _, name in { "Notify", "Fx", "Action" } do
+		local event = Instance.new("RemoteEvent")
+		event.Name = name
+		event.Parent = folder
+		remotes[name] = event
+	end
+	folder.Parent = ReplicatedStorage
+	return remotes
+end
+
+local remotes = createRemotes()
+local world = World.buildIsland()
+local deps = { world = world, remotes = remotes }
+Market.start(deps)
+Base.start(deps)
+Wave.start(deps)
+Raid.start(deps)
+
+local function onCharacterAdded(player: Player, character: Model)
+	local state = PlayerState.get(player)
+	local plot = state and world.Plots[state.plot]
+	local root = character:WaitForChild("HumanoidRootPart") :: BasePart
+	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
+	if plot then
+		task.defer(function()
+			root.CFrame = plot.spawn
+		end)
+	end
+	PlayerState.applyWalkSpeed(player)
+	humanoid.Died:Connect(function()
+		Market.dropOnDeath(player)
+	end)
+end
+
+local function onPlayerAdded(player: Player)
+	local plot = Base.claimPlot(player) or 0
+	PlayerState.create(player, plot)
+	Base.refreshPedestals(player)
+	player.CharacterAdded:Connect(function(character)
+		onCharacterAdded(player, character)
+	end)
+	if player.Character then
+		onCharacterAdded(player, player.Character)
+	end
+	if plot == 0 then
+		remotes.Notify:FireClient(player, "All four bases are taken: you can still watch the chaos!", Color3.fromRGB(255, 200, 80))
+	end
+end
+
+-- The client may only ask; the server checks and applies every purchase.
+local lastAction: { [Player]: number } = {}
+remotes.Action.OnServerEvent:Connect(function(player: Player, action: unknown)
+	if os.clock() - (lastAction[player] or 0) < 0.3 then
+		return
+	end
+	lastAction[player] = os.clock()
+	if action == "Rebirth" then
+		if PlayerState.rebirthPlayer(player) then
+			Base.refreshPedestals(player)
+			remotes.Fx:FireClient(player, "rebirth")
+			remotes.Notify:FireClient(player, "REBIRTH! Income x" .. PlayerState.multiplier(PlayerState.get(player) :: any) .. " and luckier spawns", Color3.fromRGB(255, 120, 255))
+		else
+			remotes.Notify:FireClient(player, "Not enough money to rebirth yet", Color3.fromRGB(255, 90, 90))
+		end
+	elseif action == "Lock" then
+		Base.lockBase(player)
+	elseif action == "Speed" then
+		if PlayerState.buySpeedUpgrade(player) then
+			remotes.Notify:FireClient(player, "Faster feet! Outrun that wave.", Color3.fromRGB(120, 255, 140))
+		else
+			remotes.Notify:FireClient(player, "Can't buy speed right now", Color3.fromRGB(255, 90, 90))
+		end
+	end
+end)
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+for _, player in Players:GetPlayers() do
+	onPlayerAdded(player)
+end
+Players.PlayerRemoving:Connect(function(player)
+	Market.dropOnDeath(player)
+	Base.releasePlot(player)
+	PlayerState.remove(player)
+	lastAction[player] = nil
+end)
