@@ -16,7 +16,7 @@
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { copyFileSync, cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-roblox.ts';
@@ -32,6 +32,15 @@ copyFileSync(join(here, 'PLAY.json'), join(out, 'PLAY.json'));
 cpSync(join(here, 'src'), join(out, 'src'), { recursive: true, filter: notDotted });
 mkdirSync(join(out, 'screenshots'), { recursive: true });
 if (existsSync(join(here, 'screenshots'))) cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true, filter: notDotted });
+
+// Wobble Tide pre-flight: the gate wants 3 or 4 screenshots, each at most 256 KiB with a safe name. Fail loudly here
+// rather than hand in an entry the scorer would refuse.
+const shots = readdirSync(join(out, 'screenshots')).filter((name) => /\.(png|jpe?g)$/i.test(name));
+if (shots.length < 3 || shots.length > 4) throw new Error(`screenshots/: need 3 or 4 images, found ${shots.length}`);
+for (const name of shots) {
+  if (!/^[A-Za-z0-9_][A-Za-z0-9._-]*$/.test(name)) throw new Error(`screenshots/${name}: name the gate would refuse`);
+  if (statSync(join(out, 'screenshots', name)).size > 262144) throw new Error(`screenshots/${name}: over 256 KiB`);
+}
 
 // The scorer's own caps (reference/gate.json): only text_max_bytes shapes the bytes; the others refuse an entry the
 // scorer would refuse (more than 4 screenshots or one over 256 KiB; a place of more than 500000 instances, whose

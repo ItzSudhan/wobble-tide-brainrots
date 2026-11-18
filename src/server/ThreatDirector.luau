@@ -59,10 +59,10 @@ local function buildWaveModel(): Model
 	local model = Instance.new("Model")
 	model.Name = "TidalWave"
 	local block = Enum.PartType.Block
-	local body = anchoredPart(model, block, Vector3.new(470, 22, WAVE_DEPTH), Color3.fromRGB(30, 140, 210), CFrame.new(0, 9, 0), { Transparency = 0.2, CastShadow = false })
-	anchoredPart(model, "Wedge", Vector3.new(470, 24, 16), Color3.fromRGB(50, 170, 230), CFrame.new(0, 10, -WAVE_DEPTH / 2 - 8) * CFrame.Angles(0, math.pi, 0), { Transparency = 0.25 })
-	local crest = anchoredPart(model, block, Vector3.new(470, 4, WAVE_DEPTH + 12), Color3.fromRGB(235, 250, 255), CFrame.new(0, 21.5, -6), { Material = Enum.Material.Neon, Transparency = 0.1 })
-	anchoredPart(model, block, Vector3.new(470, 3, 8), Color3.fromRGB(220, 245, 255), CFrame.new(0, 19, -WAVE_DEPTH / 2 - 12), { Transparency = 0.15 })
+	local body = anchoredPart(model, block, Vector3.new(470, 34, WAVE_DEPTH), Color3.fromRGB(30, 140, 210), CFrame.new(0, 15, 0), { Transparency = 0.15, CastShadow = false })
+	anchoredPart(model, "Wedge", Vector3.new(470, 36, 16), Color3.fromRGB(50, 170, 230), CFrame.new(0, 16, -WAVE_DEPTH / 2 - 8) * CFrame.Angles(0, math.pi, 0), { Transparency = 0.2 })
+	local crest = anchoredPart(model, block, Vector3.new(470, 5, WAVE_DEPTH + 14), Color3.fromRGB(235, 250, 255), CFrame.new(0, 33.5, -7), { Material = Enum.Material.Neon, Transparency = 0.05 })
+	anchoredPart(model, block, Vector3.new(470, 4, 9), Color3.fromRGB(220, 245, 255), CFrame.new(0, 30, -WAVE_DEPTH / 2 - 13), { Transparency = 0.1 })
 	local spray = Instance.new("ParticleEmitter")
 	spray.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 3), NumberSequenceKeypoint.new(1, 0) })
 	spray.Transparency = NumberSequence.new(0.2, 1)

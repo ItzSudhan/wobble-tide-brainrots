@@ -107,7 +107,7 @@ local raidText = text(threatPanel, "GULL RAID IN 80s", UDim2.new(1, -20, 0, 28),
 local shieldText = text(threatPanel, "BASE UNLOCKED", UDim2.new(1, -20, 0, 26), UDim2.new(0, 10, 0, 102), Color3.fromRGB(255, 120, 120), Enum.Font.GothamBold)
 
 -- Carry banner (bottom centre)
-local carryPanel = panel("Carry", UDim2.new(0, 560, 0, 64), UDim2.new(0.5, 0, 0.6, 0), Vector2.new(0.5, 1))
+local carryPanel = panel("Carry", UDim2.new(0, 600, 0, 56), UDim2.new(0.5, -90, 0, 136), Vector2.new(0.5, 0))
 local carryText = text(carryPanel, "", UDim2.new(1, -20, 1, -10), UDim2.new(0, 10, 0, 5), Color3.fromRGB(255, 230, 90))
 carryPanel.Visible = false
 
@@ -221,7 +221,8 @@ local function refreshHud()
 	for _, scaler in scalers do
 		scaler.Scale = s
 	end
-	toastHolder.Position = UDim2.new(0.5, -90 * s, 0, 136 * s)
+	carryPanel.Position = UDim2.new(0.5, -90 * s, 0, 136 * s)
+	toastHolder.Position = UDim2.new(0.5, -90 * s, 0, (carryPanel.Visible and 200 or 136) * s)
 
 	local now = workspace:GetServerTimeNow()
 	if ReplicatedStorage:GetAttribute("WaveActive") then
