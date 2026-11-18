@@ -1,16 +1,18 @@
 --!strict
 -- GameServer: boots Wobble Tide Brainrots. Builds the island, creates the remotes, starts every
--- service and wires players in and out. The server owns money, inventory, spawning and both threats.
+-- service and wires players in and out. The server owns money,
+-- inventory, spawning and both threats; the client (ReplicatedFirst.HudController) only draws and asks.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
+local Modules = script.Parent
 
-local World = require(script.Parent.WorldBuilder)
-local PlayerState = require(script.Parent.PlayerState)
-local Market = require(script.Parent.BrainrotMarket)
-local Base = require(script.Parent.BaseService)
-local Wave = require(script.Parent.WaveHazard)
-local Raid = require(script.Parent.GullRaid)
+local World = require(ServerStorage.WorldBuilder)
+local PlayerState = require(Modules.PlayerState)
+local Market = require(Modules.BrainrotMarket)
+local Base = require(Modules.BaseService)
+local Threats = require(Modules.ThreatDirector)
 
 local function createRemotes()
 	local folder = Instance.new("Folder")
@@ -31,8 +33,7 @@ local world = World.buildIsland()
 local deps = { world = world, remotes = remotes }
 Market.start(deps)
 Base.start(deps)
-Wave.start(deps)
-Raid.start(deps)
+Threats.start(deps)
 
 local function onCharacterAdded(player: Player, character: Model)
 	local state = PlayerState.get(player)
@@ -115,7 +116,7 @@ local function setupStudioTestHook()
 		end
 		return "ok"
 	end
-	hook.Parent = game:GetService("ServerStorage")
+	hook.Parent = ServerStorage
 end
 setupStudioTestHook()
 

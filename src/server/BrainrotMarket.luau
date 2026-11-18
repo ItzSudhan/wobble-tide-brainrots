@@ -7,7 +7,7 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Catalog = require(ReplicatedStorage:WaitForChild("BrainrotCatalog"))
-local Builder = require(script.Parent.BrainrotBuilder)
+local Builder = require(game:GetService("ServerStorage").WorldBuilder.BrainrotBuilder)
 local PlayerState = require(script.Parent.PlayerState)
 
 local Market = {}

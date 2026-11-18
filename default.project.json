@@ -7,15 +7,23 @@
         "CharacterAutoLoads": true
       }
     },
+    "ReplicatedFirst": {
+      "$path": "src/client"
+    },
     "ReplicatedStorage": {
       "$path": "src/shared"
     },
     "ServerScriptService": {
-      "$path": "src/server"
+      "$path": "src/boot",
+      "BaseService": { "$path": "src/server/BaseService.luau" },
+      "BrainrotMarket": { "$path": "src/server/BrainrotMarket.luau" },
+      "PlayerState": { "$path": "src/server/PlayerState.luau" },
+      "ThreatDirector": { "$path": "src/server/ThreatDirector.luau" }
     },
-    "StarterPlayer": {
-      "StarterPlayerScripts": {
-        "$path": "src/client"
+    "ServerStorage": {
+      "WorldBuilder": {
+        "$path": "src/server/WorldBuilder.luau",
+        "BrainrotBuilder": { "$path": "src/server/BrainrotBuilder.luau" }
       }
     },
     "Workspace": {
