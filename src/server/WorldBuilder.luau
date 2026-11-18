@@ -67,7 +67,7 @@ end
 
 local function floatingSign(adornee: BasePart, text: string, color: Color3, offsetY: number)
 	local gui = Instance.new("BillboardGui")
-	gui.Size = UDim2.new(0, 200, 0, 50)
+	gui.Size = UDim2.fromScale(14, 3.5)
 	gui.StudsOffsetWorldSpace = Vector3.new(0, offsetY, 0)
 	gui.MaxDistance = 220
 	gui.LightInfluence = 0
@@ -125,8 +125,8 @@ local function buildRunway()
 end
 
 local function buildPedestal(plotIndex: number, cf: CFrame, color: Color3): BasePart
-	local base = part({ Name = "Pedestal", Shape = Enum.PartType.Cylinder, Size = Vector3.new(3, 9, 9), CFrame = cf * CFrame.new(0, 1.5, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(245, 245, 250) })
-	part({ Name = "PedestalRing", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 9.4, 9.4), CFrame = cf * CFrame.new(0, 2.9, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = color, Material = Enum.Material.Neon })
+	local base = part({ Name = "Pedestal", Shape = Enum.PartType.Cylinder, Size = Vector3.new(3, 12, 12), CFrame = cf * CFrame.new(0, 1.5, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(245, 245, 250) })
+	part({ Name = "PedestalRing", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 12.4, 12.4), CFrame = cf * CFrame.new(0, 2.9, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = color, Material = Enum.Material.Neon })
 	base:SetAttribute("Plot", plotIndex)
 	return base
 end
@@ -143,8 +143,8 @@ local function buildPlot(index: number, x: number)
 	local board = part({ Name = "OwnerBoard", Size = Vector3.new(36, 7, 1), Position = Vector3.new(x, 11, z - 30), Color = Color3.fromRGB(30, 25, 50) })
 	local ownerLabel = surfaceText(board, Enum.NormalId.Back, "EMPTY BASE", color)
 	local pedestals = {}
-	for row, dz in { -12, 8 } do
-		for col, dx in { -27, -9, 9, 27 } do
+	for row, dz in { -14, 8 } do
+		for col, dx in { -28, -9.5, 9.5, 28 } do
 			local cf = CFrame.new(x + dx, 1, z + dz)
 			buildPedestal(index, cf, color)
 			pedestals[(row - 1) * 4 + col] = CFrame.new(x + dx, 4, z + dz) * CFrame.Angles(0, math.pi, 0)

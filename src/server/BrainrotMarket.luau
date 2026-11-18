@@ -40,7 +40,7 @@ local function attachCarriedModel(player: Player, id: string, mutation: string)
 		return
 	end
 	local model = Builder.buildBrainrot(id, mutation)
-	model:ScaleTo(model:GetScale() * 0.7)
+	model:ScaleTo(model:GetScale() * 0.6)
 	Builder.attachLabel(model, id, mutation, nil)
 	local root = model.PrimaryPart :: BasePart
 	root.Anchored = false

@@ -282,7 +282,7 @@ Extras.glasses = function(ctx)
 end
 
 Extras.rings = function(ctx)
-	addPart(ctx, Enum.PartType.Cylinder, Vector3.new(0.15, ctx.hx * 4, ctx.hx * 4), ctx.accent, CFrame.new(0, bodyCenter(ctx), 0) * CFrame.Angles(math.rad(15), 0, math.rad(90)), { Transparency = 0.25, Material = Enum.Material.Neon })
+	addPart(ctx, Enum.PartType.Cylinder, Vector3.new(0.15, ctx.hx * 3.2, ctx.hx * 3.2), ctx.accent, CFrame.new(0, bodyCenter(ctx), 0) * CFrame.Angles(math.rad(15), 0, math.rad(90)), { Transparency = 0.25, Material = Enum.Material.Neon })
 end
 
 local function legHeightFor(extras: { string }): number
@@ -340,9 +340,10 @@ function Builder.attachLabel(model: Model, id: string, mutation: string, priceTe
 	local rarity = Catalog.rarityOf(entry)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "Label"
-	gui.Size = UDim2.new(0, 230, 0, priceText and 104 or 82)
-	gui.StudsOffsetWorldSpace = Vector3.new(0, model:GetExtentsSize().Y + 1.6, 0)
-	gui.MaxDistance = 110
+	-- sized in studs so neighbouring labels never overlap, however far the camera is
+	gui.Size = UDim2.fromScale(15, priceText and 7.4 or 5.8)
+	gui.StudsOffsetWorldSpace = Vector3.new(0, model:GetExtentsSize().Y + 3.2, 0)
+	gui.MaxDistance = 170
 	gui.LightInfluence = 0
 	gui.Adornee = model.PrimaryPart
 	local list = Instance.new("UIListLayout")
@@ -419,10 +420,7 @@ function Builder.buildBrainrot(id: string, mutation: string): Model
 		addGooglyFace(ctx)
 	end
 	applyMutationFinish(model, mutation)
-	local scale = Catalog.rarityOf(entry).scale
-	if scale ~= 1 then
-		model:ScaleTo(scale)
-	end
+	model:ScaleTo(Catalog.rarityOf(entry).scale * 1.5)
 	return model
 end
 

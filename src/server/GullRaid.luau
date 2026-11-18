@@ -50,8 +50,8 @@ local function buildCrumbBandit(): Model
 	gullPart(model, Enum.PartType.Block, Vector3.new(1, 0.7, 2.4), Color3.fromRGB(255, 150, 30), CFrame.new(0, 1.4, -5.2))
 	gullPart(model, Enum.PartType.Block, Vector3.new(3, 0.4, 2.5), Color3.fromRGB(150, 155, 165), CFrame.new(0, 0.4, 3.2))
 	local gui = Instance.new("BillboardGui")
-	gui.Size = UDim2.new(0, 220, 0, 40)
-	gui.StudsOffsetWorldSpace = Vector3.new(0, 6, 0)
+	gui.Size = UDim2.fromScale(22, 4)
+	gui.StudsOffsetWorldSpace = Vector3.new(0, 7, 0)
 	gui.LightInfluence = 0
 	local label = Instance.new("TextLabel")
 	label.Size = UDim2.fromScale(1, 1)

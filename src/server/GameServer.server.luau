@@ -91,6 +91,34 @@ remotes.Action.OnServerEvent:Connect(function(player: Player, action: unknown)
 	end
 end)
 
+-- Studio-only play-test hook (never exists in a live server): grant money or fill a base for testing.
+local function setupStudioTestHook()
+	if not game:GetService("RunService"):IsStudio() then
+		return
+	end
+	local hook = Instance.new("BindableFunction")
+	hook.Name = "StudioTestHook"
+	hook.OnInvoke = function(command: string, arg: any)
+		local player = Players:GetPlayers()[1]
+		local state = player and PlayerState.get(player)
+		if not state then
+			return "no player"
+		end
+		if command == "grant" then
+			PlayerState.addMoney(player, arg)
+		elseif command == "fill" then
+			for i, owned in arg do
+				state.slots[i] = owned
+			end
+			PlayerState.publish(player)
+			Base.refreshPedestals(player)
+		end
+		return "ok"
+	end
+	hook.Parent = game:GetService("ServerStorage")
+end
+setupStudioTestHook()
+
 Players.PlayerAdded:Connect(onPlayerAdded)
 for _, player in Players:GetPlayers() do
 	onPlayerAdded(player)

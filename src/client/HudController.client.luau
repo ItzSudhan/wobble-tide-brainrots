@@ -16,6 +16,11 @@ local WHITE = Color3.new(1, 1, 1)
 local GREEN = Color3.fromRGB(110, 255, 120)
 local PANEL = Color3.fromRGB(20, 22, 45)
 
+-- our threat panel lives where Roblox's player list would sit
+pcall(function()
+	game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
+end)
+
 local gui = Instance.new("ScreenGui")
 gui.Name = "WobbleHud"
 gui.ResetOnSpawn = false
@@ -29,8 +34,17 @@ local function corner(parent: Instance, radius: number)
 	c.Parent = parent
 end
 
+-- Every top-level panel gets a UIScale so the HUD shrinks to fit narrow viewports without overlapping.
+local scalers: { UIScale } = {}
+local function addScaler(parent: Instance)
+	local s = Instance.new("UIScale")
+	s.Parent = parent
+	table.insert(scalers, s)
+end
+
 local function panel(name: string, size: UDim2, pos: UDim2, anchor: Vector2): Frame
 	local f = Instance.new("Frame")
+	addScaler(f)
 	f.Name = name
 	f.Size = size
 	f.Position = pos
@@ -71,12 +85,12 @@ local function withCommas(n: number): string
 end
 
 -- Money panel (top centre, clear of Roblox's top-left buttons)
-local moneyPanel = panel("Money", UDim2.new(0, 440, 0, 118), UDim2.new(0.5, 0, 0, 10), Vector2.new(0.5, 0))
+local moneyPanel = panel("Money", UDim2.new(0, 400, 0, 118), UDim2.new(0.5, -90, 0, 10), Vector2.new(0.5, 0))
 local moneyText = text(moneyPanel, "$0", UDim2.new(1, -20, 0, 66), UDim2.new(0, 10, 0, 4), Color3.fromRGB(255, 225, 70))
 local incomeText = text(moneyPanel, "+$0/s", UDim2.new(1, -20, 0, 40), UDim2.new(0, 10, 0, 70), GREEN)
 
 -- Threat panel (top right): wave countdown and the next gull raid
-local threatPanel = panel("Threats", UDim2.new(0, 330, 0, 132), UDim2.new(1, -12, 0, 10), Vector2.new(1, 0))
+local threatPanel = panel("Threats", UDim2.new(0, 310, 0, 132), UDim2.new(1, -12, 0, 10), Vector2.new(1, 0))
 local waveText = text(threatPanel, "TIDAL WAVE IN 55s", UDim2.new(1, -20, 0, 40), UDim2.new(0, 10, 0, 6), WHITE)
 local waveBarBack = Instance.new("Frame")
 waveBarBack.Size = UDim2.new(1, -24, 0, 16)
@@ -93,24 +107,25 @@ local raidText = text(threatPanel, "GULL RAID IN 80s", UDim2.new(1, -20, 0, 28),
 local shieldText = text(threatPanel, "BASE UNLOCKED", UDim2.new(1, -20, 0, 26), UDim2.new(0, 10, 0, 102), Color3.fromRGB(255, 120, 120), Enum.Font.GothamBold)
 
 -- Carry banner (bottom centre)
-local carryPanel = panel("Carry", UDim2.new(0, 560, 0, 64), UDim2.new(0.5, 0, 1, -96), Vector2.new(0.5, 1))
+local carryPanel = panel("Carry", UDim2.new(0, 560, 0, 64), UDim2.new(0.5, 0, 0.6, 0), Vector2.new(0.5, 1))
 local carryText = text(carryPanel, "", UDim2.new(1, -20, 1, -10), UDim2.new(0, 10, 0, 5), Color3.fromRGB(255, 230, 90))
 carryPanel.Visible = false
 
 -- How to play (left middle)
-local helpPanel = panel("Help", UDim2.new(0, 250, 0, 168), UDim2.new(0, 12, 0.5, 0), Vector2.new(0, 0.5))
+local helpPanel = panel("Help", UDim2.new(0, 250, 0, 204), UDim2.new(0, 12, 0.45, 0), Vector2.new(0, 0.5))
 text(helpPanel, "HOW TO PLAY", UDim2.new(1, -16, 0, 30), UDim2.new(0, 8, 0, 6), Color3.fromRGB(120, 255, 220))
 local helpLines = { "1. Buy a brainrot on the runway", "2. Carry it home to your base", "3. It earns money every second", "4. Hide from the TIDAL WAVE", "5. Lock base vs the gull" }
 for i, line in helpLines do
 	text(helpPanel, line, UDim2.new(1, -16, 0, 22), UDim2.new(0, 8, 0, 14 + i * 26), WHITE, Enum.Font.GothamBold).TextXAlignment = Enum.TextXAlignment.Left
 end
-local baseText = text(gui, "BASE 1/8", UDim2.new(0, 250, 0, 30), UDim2.new(0, 12, 0.5, 92), Color3.fromRGB(255, 255, 255))
+local baseText = text(helpPanel, "BASE 1/8", UDim2.new(1, -16, 0, 30), UDim2.new(0, 8, 0, 168), Color3.fromRGB(255, 230, 90))
 
 -- Action buttons (right middle)
 local function button(label: string, color: Color3, y: number, action: string): TextButton
 	local b = Instance.new("TextButton")
+	addScaler(b)
 	b.Size = UDim2.new(0, 240, 0, 66)
-	b.Position = UDim2.new(1, -12, 0.5, y)
+	b.Position = UDim2.new(1, -12, 0.45, y)
 	b.AnchorPoint = Vector2.new(1, 0.5)
 	b.BackgroundColor3 = color
 	b.Text = label
@@ -144,6 +159,7 @@ toastHolder.Size = UDim2.new(0, 640, 0, 160)
 toastHolder.Position = UDim2.new(0.5, 0, 0, 136)
 toastHolder.AnchorPoint = Vector2.new(0.5, 0)
 toastHolder.Parent = gui
+addScaler(toastHolder)
 local toastLayout = Instance.new("UIListLayout")
 toastLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 toastLayout.Padding = UDim.new(0, 4)
@@ -198,8 +214,14 @@ local function refreshHud()
 	local income = player:GetAttribute("Income") or 0
 	local mult = player:GetAttribute("Multiplier") or 1
 	moneyText.Text = money >= 1e6 and Catalog.formatMoney(money) or withCommas(money)
-	incomeText.Text = string.format("+%s/s   x%.1f   Rebirths %d", Catalog.formatMoney(income), mult, player:GetAttribute("Rebirths") or 0)
-	baseText.Text = string.format("BASE %d/%d BRAINROTS", player:GetAttribute("SlotsUsed") or 0, Catalog.Tuning.PedestalsPerBase)
+	incomeText.Text = string.format("+%s/s  x%.1f", Catalog.formatMoney(income), mult)
+	baseText.Text = string.format("BASE %d/%d  REBIRTHS %d", player:GetAttribute("SlotsUsed") or 0, Catalog.Tuning.PedestalsPerBase, player:GetAttribute("Rebirths") or 0)
+	local viewport = workspace.CurrentCamera.ViewportSize
+	local s = math.clamp(viewport.X / 1000, 0.55, 1)
+	for _, scaler in scalers do
+		scaler.Scale = s
+	end
+	toastHolder.Position = UDim2.new(0.5, -90 * s, 0, 136 * s)
 
 	local now = workspace:GetServerTimeNow()
 	if ReplicatedStorage:GetAttribute("WaveActive") then
@@ -266,7 +288,7 @@ local function floatMoneyPopup(model: Model, amount: number)
 		return
 	end
 	local bb = Instance.new("BillboardGui")
-	bb.Size = UDim2.new(0, 140, 0, 40)
+	bb.Size = UDim2.new(0, 110, 0, 30)
 	bb.Adornee = model.PrimaryPart
 	bb.StudsOffsetWorldSpace = Vector3.new(math.random() * 2 - 1, 2, 0)
 	bb.LightInfluence = 0
